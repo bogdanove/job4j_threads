@@ -1,17 +1,13 @@
 package ru.job4j.concurrent;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Wget {
     public static void main(String[] args) {
-        AtomicInteger counter = new AtomicInteger();
         Thread thread = new Thread(
                 () -> {
                     try {
-                        while (counter.get() < 101) {
+                        for (int i = 0; i < 101; i++) {
                             Thread.sleep(1000);
-                            System.out.print("\rLoading : " + counter + "%");
-                            counter.getAndIncrement();
+                            System.out.print("\rLoading : " + i + "%");
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
