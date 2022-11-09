@@ -12,15 +12,23 @@ public final class ParseFile {
     }
 
     public synchronized String getContent(Predicate<Character> filter) throws IOException {
-        String output = "";
-        try (BufferedReader i = new BufferedReader(new FileReader(file))) {
-            int data;
-            while ((data = i.read()) > 0) {
+        var output = new StringBuilder();
+        try (var in = new BufferedReader(new FileReader(file))) {
+            var data = 0;
+            while ((data = in.read()) != -1) {
                 if (filter.test((char) data)) {
-                    output += (char) data;
+                    output.append((char) data);
                 }
             }
         }
-        return output;
+        return output.toString();
+    }
+
+    public synchronized String getAllContent() throws IOException {
+        return getContent(x -> true);
+    }
+
+    public synchronized String getContentWithoutUnicode() throws IOException {
+        return getContent(x -> x < 0x80);
     }
 }

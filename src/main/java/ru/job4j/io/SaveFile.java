@@ -8,12 +8,12 @@ import java.io.PrintWriter;
 public class SaveFile {
 
     public synchronized void saveContent(String content) throws IOException {
-        try (PrintWriter o = new PrintWriter(
+        try (var out = new PrintWriter(
                 new BufferedOutputStream(
-                        new FileOutputStream(content.substring(0, 10))
+                        new FileOutputStream("out.txt")
                 ))) {
-            for (int i = 0; i < content.length(); i += 1) {
-                o.write(content.charAt(i));
+            for (var i = 0; i < content.length(); i++) {
+                out.write(content.charAt(i));
             }
         }
     }
