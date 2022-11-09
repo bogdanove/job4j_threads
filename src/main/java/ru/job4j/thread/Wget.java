@@ -17,12 +17,12 @@ public class Wget implements Runnable {
     @Override
     public void run() {
         var fileNames = url.split("/");
-        try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(fileNames[fileNames.length - 1])) {
-            byte[] dataBuffer = new byte[1024];
-            int bytesRead;
+        try (var in = new BufferedInputStream(new URL(url).openStream());
+             var fileOutputStream = new FileOutputStream(fileNames[fileNames.length - 1])) {
+            var dataBuffer = new byte[1024];
+            var bytesRead = 0;
             var start = System.currentTimeMillis();
-            int downloadData = 0;
+            var downloadData = 0;
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 downloadData += bytesRead;
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
@@ -56,9 +56,9 @@ public class Wget implements Runnable {
 
     public static void main(String[] args) throws InterruptedException {
         if (validateArgs(args)) {
-            String url = args[0];
-            int speed = Integer.parseInt(args[1]);
-            Thread wget = new Thread(new Wget(url, speed));
+            var url = args[0];
+            var speed = Integer.parseInt(args[1]);
+            var wget = new Thread(new Wget(url, speed));
             wget.start();
             wget.join();
         }
