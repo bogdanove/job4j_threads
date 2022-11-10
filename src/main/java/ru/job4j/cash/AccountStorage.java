@@ -8,7 +8,7 @@ public class AccountStorage {
     private final HashMap<Integer, Account> accounts = new HashMap<>();
 
     public synchronized boolean add(Account account) {
-        return Objects.equals(accounts.putIfAbsent(account.id(), account), account);
+        return accounts.putIfAbsent(account.id(), account) == null;
     }
 
     public synchronized boolean update(Account account) {
@@ -16,7 +16,7 @@ public class AccountStorage {
     }
 
     public synchronized boolean delete(int id) {
-        return accounts.remove(id, getById(id).get());
+        return accounts.remove(id, accounts.get(id));
     }
 
     public synchronized Optional<Account> getById(int id) {
