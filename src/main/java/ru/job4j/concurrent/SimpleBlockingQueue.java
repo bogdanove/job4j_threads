@@ -24,9 +24,8 @@ public class SimpleBlockingQueue<T> {
             wait();
             System.out.println("Producer wait");
         }
-        notifyAll();
         queue.add(value);
-
+        notifyAll();
     }
 
     public synchronized T poll() throws InterruptedException {
