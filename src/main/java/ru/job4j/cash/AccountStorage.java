@@ -1,17 +1,14 @@
 package ru.job4j.cash;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 
 public class AccountStorage {
     private final HashMap<Integer, Account> accounts = new HashMap<>();
 
     public synchronized boolean add(Account account) {
-        if (accounts.containsKey(account.id())) {
-            return false;
-        }
-        accounts.put(account.id(), account);
-        return true;
+        return Objects.equals(accounts.putIfAbsent(account.id(), account), account);
     }
 
     public synchronized boolean update(Account account) {
@@ -23,8 +20,7 @@ public class AccountStorage {
     }
 
     public synchronized Optional<Account> getById(int id) {
-        var result = accounts.get(id);
-        return result != null ? Optional.of(result) : Optional.empty();
+        return Optional.ofNullable(accounts.get(id));
     }
 
     public synchronized boolean transfer(int fromId, int toId, int amount) {
