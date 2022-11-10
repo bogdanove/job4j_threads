@@ -28,11 +28,11 @@ public class SingleLockList<T> implements Iterable<T> {
 
     @Override
     public synchronized Iterator<T> iterator() {
-        return Collections.synchronizedList(new ArrayList<>(list)).iterator();
+        return copy(list).iterator();
     }
 
     private synchronized List<T> copy(List<T> origin) {
-        return Collections.synchronizedList(origin);
+        return Collections.synchronizedList(new ArrayList<>(origin));
     }
 }
 
