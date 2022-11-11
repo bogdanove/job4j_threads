@@ -23,7 +23,6 @@ public class CountBarrier {
             while (count < total) {
                 try {
                     monitor.wait();
-                    Thread.yield();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
