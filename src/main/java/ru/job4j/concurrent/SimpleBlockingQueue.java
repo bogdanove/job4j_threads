@@ -22,7 +22,6 @@ public class SimpleBlockingQueue<T> {
     public synchronized void offer(T value) throws InterruptedException {
         while (queue.size() >= limit) {
             wait();
-            System.out.println("Producer wait");
         }
         queue.add(value);
         notifyAll();
@@ -31,9 +30,8 @@ public class SimpleBlockingQueue<T> {
     public synchronized T poll() throws InterruptedException {
         while (queue.size() == 0) {
             wait();
-            System.out.println("Consumer wait");
         }
-        var result = queue.remove();
+        var result = queue.poll();
         notifyAll();
         return result;
     }
