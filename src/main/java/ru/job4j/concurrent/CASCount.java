@@ -6,20 +6,18 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @ThreadSafe
 public class CASCount {
-    private final AtomicReference<Integer> count = new AtomicReference<>();
+    private final AtomicReference<Integer> count = new AtomicReference<>(0);
 
     public void increment() {
         int next;
+        int current;
         do {
-            next = count.get() + 1;
-        } while (!count.compareAndSet(count.get(), next));
+            current = count.get();
+            next = current + 1;
+        } while (!count.compareAndSet(current, next));
     }
 
     public int get() {
-        int temp;
-        do {
-            temp = count.get();
-        } while (!count.compareAndSet(count.get(), temp));
-        return temp;
+        return count.get();
     }
 }
