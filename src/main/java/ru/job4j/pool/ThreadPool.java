@@ -9,21 +9,31 @@ public class ThreadPool {
     private final List<Thread> threads = new LinkedList<>();
     private final int size = Runtime.getRuntime().availableProcessors();
     private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(size);
-    private volatile boolean isRunning = true;
+
+    public ThreadPool() {
+        for (int i = 0; i < size; i++) {
+            var thread = new Thread(
+                    () -> {
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try {
+                                tasks.poll().run();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    }
+            );
+            thread.start();
+            threads.add(thread);
+        }
+        threads.forEach(Thread::start);
+    }
 
     public void work(Runnable job) throws InterruptedException {
-        while (isRunning) {
-            if (threads.size() < size) {
-                threads.add(new Thread(job));
-                tasks.offer(job);
-            }
-            threads.forEach(Thread::run);
-        }
-
+        tasks.offer(job);
     }
 
     public void shutdown() {
-        isRunning = false;
         threads.forEach(Thread::interrupt);
     }
 }
