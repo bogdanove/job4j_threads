@@ -13,15 +13,14 @@ public class EmailNotification {
     );
 
     public void emailTo(User user) {
-        pool.submit(new Runnable() {
-            @Override
-            public void run() {
-                var subject = TEMPLATE_SUBJECT.replace("{username}", user.getUsername()).replace("{email}", user.getEmail());
-                var body = TEMPLATE_BODY.replace("{username}", user.getUsername());
-                send(subject, body, user.getEmail());
-            }
-        });
-
+        pool.submit(
+                () -> {
+                    var subject = TEMPLATE_SUBJECT.replace("{username}",
+                            user.getUsername()).replace("{email}", user.getEmail());
+                    var body = TEMPLATE_BODY.replace("{username}",
+                            user.getUsername());
+                    send(subject, body, user.getEmail());
+                });
     }
 
     public void send(String subject, String body, String email) {
@@ -30,5 +29,12 @@ public class EmailNotification {
 
     public void close() {
         pool.shutdown();
+        while (!pool.isTerminated()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
