@@ -26,7 +26,6 @@ public class ThreadPool {
             thread.start();
             threads.add(thread);
         }
-        threads.forEach(Thread::start);
     }
 
     public void work(Runnable job) throws InterruptedException {
