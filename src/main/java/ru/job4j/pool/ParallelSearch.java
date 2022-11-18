@@ -1,49 +1,50 @@
 package ru.job4j.pool;
 
-import java.util.Arrays;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-public class ParallelSearch extends RecursiveTask<Integer> {
+public class ParallelSearch<T> extends RecursiveTask<Integer> {
 
-    private final Object[] array;
-    private final Object desired;
+    private final T[] array;
+    private final T desired;
+    private final int from;
+    private final int to;
 
 
-    public ParallelSearch(Object[] array, Object desired) {
+    public ParallelSearch(T[] array, T desired, int from, int to) {
         this.array = array;
         this.desired = desired;
+        this.from = from;
+        this.to = to;
     }
 
 
     @Override
     protected Integer compute() {
-        if (array.length < 10) {
+        if (to - from < 10) {
             return search();
         }
-        var mid = array.length / 2;
-        var left = new ParallelSearch(Arrays.copyOfRange(array, 0, mid), desired);
-        var right = new ParallelSearch(Arrays.copyOfRange(array, mid + 1, array.length), desired);
+        var mid = from + to / 2;
+        var left = new ParallelSearch(array, desired, from, mid);
+        var right = new ParallelSearch(array, desired, mid + 1, to);
         left.fork();
         right.fork();
-        var res1 = right.join();
-        var res2 = left.join();
-        return merge(res1, res2);
+        var res1 = (Integer) right.join();
+        var res2 = (Integer) left.join();
+        return Math.max(res1, res2);
     }
 
     private Integer search() {
-        for (var i = 0; i < array.length; i++) {
+        for (int i = from; i <= to; i++) {
             if (array[i].equals(desired)) {
                 return i;
             }
         }
-        return null;
+        return -1;
     }
 
-    private Integer merge(Integer first, Integer second) {
-        if (first == null && second == null) {
-            return null;
-        }
-        return first == null ? second : first;
+    public static <T> Integer find(T[] array, T desired) {
+        ForkJoinPool forkJoinPool = new ForkJoinPool();
+        return (Integer) forkJoinPool.invoke(new ParallelSearch(array, desired, 0, array.length - 1));
     }
-
 }
